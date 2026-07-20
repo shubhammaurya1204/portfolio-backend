@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import resumeRoutes from './routes/resume.js';
+import contactRoutes from './routes/contact.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ const MONGO_DB_URL = process.env.MONGO_DB_URL || process.env.MONGO_DB_URL;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
+  'http://localhost:5175',
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
@@ -24,7 +26,7 @@ app.use(cors({
     }
     callback(new Error(`CORS: Origin ${origin} not allowed`));
   },
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   credentials: true,
 }));
 
@@ -32,6 +34,7 @@ app.use(express.json());
 
 // ── Routes ──────────────────────────────────────────────────
 app.use('/api/resume', resumeRoutes);
+app.use('/api/contact', contactRoutes);
 
 // ── Health check ────────────────────────────────────────────
 app.get('/', (req, res) => {
