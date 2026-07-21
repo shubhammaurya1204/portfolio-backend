@@ -16,15 +16,24 @@ const allowedOrigins = [
   'http://localhost:5175',
   process.env.CLIENT_URL,
   process.env.ADMIN_URL,
-].filter(Boolean);
+]
+  .filter(Boolean)
+  .map((url) => url.replace(/\/+$/, ''));
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (curl, Postman, server-to-server)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    const normalizedOrigin = origin.replace(/\/+$/, '');
+    if (
+      allowedOrigins.includes(normalizedOrigin) ||
+      normalizedOrigin.endsWith('.vercel.app') ||
+      normalizedOrigin.endsWith('.netlify.app') ||
+      normalizedOrigin.endsWith('.onrender.com')
+    ) {
       return callback(null, true);
     }
+    console.warn(`[CORS Blocked] Origin not allowed: ${origin}`);
     callback(new Error(`CORS: Origin ${origin} not allowed`));
   },
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
